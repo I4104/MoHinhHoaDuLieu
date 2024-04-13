@@ -37,7 +37,7 @@ def main():
     with row_2:
         st.subheader("User Score of Movies and Their Genre")
         
-        avg_user_score = filtered_data.groupby('genre')['score'].mean().round(2)
+        avg_user_score = movies_data.groupby('genre')['score'].mean().round(2)
         
         fig = go.Figure()
         fig.add_trace(go.Scatter(x=avg_user_score.index, y=avg_user_score.values, mode='lines+markers', name='User Score'))
