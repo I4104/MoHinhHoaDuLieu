@@ -28,16 +28,17 @@ def main():
     
     row_1, row_2 = st.columns([5,5])
     selected_year, selected_genre, min_score, max_score = sidebar_filters(movies_data)
-    filtered_data = movies_data[(movies_data['year'] == selected_year) & (movies_data['genre'].isin(selected_genre)) & (movies_data['score'] >= min_score) & (movies_data['score'] <= max_score)]
     with row_1:    
         st.subheader("Lists of movies filtered by year and Genre")
+        filtered_data = movies_data[(movies_data['year'] == selected_year) & (movies_data['genre'].isin(selected_genre))]
         df = pd.DataFrame(filtered_data, columns=('name', 'genre', 'year'))
         st.dataframe(df, height=300, width=1000)
         
     with row_2:
         st.subheader("User Score of Movies and Their Genre")
         
-        avg_user_score = movies_data.groupby('genre')['score'].mean().round(2)
+        plotly_data = movies_data[(movies_data['score'] >= min_score) & (movies_data['score'] <= max_score)]
+        avg_user_score = plotly_data.groupby('genre')['score'].mean().round(2)
         
         fig = go.Figure()
         fig.add_trace(go.Scatter(x=avg_user_score.index, y=avg_user_score.values, mode='lines+markers', name='User Score'))
