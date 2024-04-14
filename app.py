@@ -9,8 +9,7 @@ def sidebar_filters(data):
     
     st.sidebar.markdown("Select your preferred genre(s) and year to view the movies released that year and on that genre")
     genre = data['genre'].unique()   
-    selected_default = list(genre)[:4]
-    selected_genre = st.sidebar.multiselect('Select Genre', genre, default=selected_default)
+    selected_genre = st.sidebar.multiselect('Select Genre', genre, default=['Animation','Horror','Fantasy','Romance'])
     
     years = data['year'].unique().astype(str)
     selected_year = st.sidebar.selectbox('Select Year', years)
@@ -22,7 +21,9 @@ def main():
 
     st.header("Interactive Dashboard")
     movies_data = pd.read_csv("https://raw.githubusercontent.com/nv-thang/Data-Visualization-Course/main/movies.csv")
-    movies_data.dropna(inplace=True)
+    movies_data.info()
+    movies_data.dropna()
+    
     movies_data['score'] = pd.to_numeric(movies_data['score'], errors='coerce')
     movies_data['year'] = movies_data['year'].astype(str)
     
@@ -46,19 +47,18 @@ def main():
         
         st.plotly_chart(fig)
 
-    st.subheader("Average Movie Budget by Genre")
+    st.write("""Average Movie Budget, Grouped by Genre""")
     avg_budget = movies_data.groupby('genre')['budget'].mean().round()
     avg_budget = avg_budget.reset_index()
-    genre_budget = avg_budget['genre']
-    avg_budget_value = avg_budget['budget']
-    
-    fig2, ax2 = plt.subplots(figsize=(12, 8))
-    ax2.bar(genre_budget, avg_budget_value, color='maroon')
-    ax2.set_xlabel('Genre')
-    ax2.set_ylabel('Average Budget')
-    ax2.set_title('Average Movie Budget by Genre')
-    ax2.tick_params(axis='x', rotation=45)
-    st.pyplot(fig2)
+    genre = avg_budget['genre']
+    avg_bud = avg_budget['budget']
+
+    fig = plt.figure(figsize = (19, 10))
+    plt.bar(genre, avg_bud, color = 'maroon')
+    plt.xlabel('genre')
+    plt.ylabel('budget')
+    plt.title('Matplotlib Bar Chart Showing the Average \
+    Budget of Movies in Each Genre')
 
 if __name__ == "__main__":
     main()
