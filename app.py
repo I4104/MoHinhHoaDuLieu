@@ -57,7 +57,8 @@ def main():
     plt.bar(genre, avg_bud, color = 'maroon')
     plt.xlabel('genre')
     plt.ylabel('budget')
-    plt.title('Matplotlib Bar Chart Showing the Average \ Budget of Movies in Each Genre')
+    plt.title('Matplotlib Bar Chart Showing the Average \
+        Budget of Movies in Each Genre')
 
 if __name__ == "__main__":
     main()
