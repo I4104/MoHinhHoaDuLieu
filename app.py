@@ -38,7 +38,7 @@ def main():
         st.subheader("User Score of Movies and Their Genre")
 
         plotly_data = movies_data[(movies_data['score'] >= min_score) & (movies_data['score'] <= max_score)]
-        avg_user_score = plotly_data.groupby('genre')['score'].mean().round(2)
+        avg_user_score = plotly_data.groupby('genre')['score'].count()
 
         figpx = go.Figure(data=go.Scatter(x=avg_user_score.index, y=avg_user_score.values, mode='lines+markers'), 
                         layout=dict(xaxis=dict(showgrid=True, gridcolor='white', gridwidth=1),
