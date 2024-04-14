@@ -5,7 +5,7 @@ import plotly.graph_objects as go
 
 def sidebar_filters(data):
     st.sidebar.markdown("Select a range on the slider (it represents movie score) to view the total number of movies in a genre that falls within that range")
-    min_score, max_score = st.sidebar.slider("Choose a value:", min_value=data['score'].min(), max_value=data['score'].max(), value=(3.0, 4.0), step=0.1)
+    min_score, max_score = st.sidebar.slider("Choose a value:", 0.0, 10.0, value=(3.0, 4.0), step=0.1)
     
     st.sidebar.markdown("Select your preferred genre(s) and year to view the movies released that year and on that genre")
     genre = data['genre'].unique()   
@@ -21,7 +21,6 @@ def main():
 
     st.header("Interactive Dashboard")
     movies_data = pd.read_csv("https://raw.githubusercontent.com/nv-thang/Data-Visualization-Course/main/movies.csv")
-    movies_data.info()
     movies_data.dropna()
     
     movies_data['score'] = pd.to_numeric(movies_data['score'], errors='coerce')
@@ -33,19 +32,23 @@ def main():
         st.subheader("Lists of movies filtered by year and Genre")
         filtered_data = movies_data[(movies_data['year'] == selected_year) & (movies_data['genre'].isin(selected_genre))]
         df = pd.DataFrame(filtered_data, columns=('name', 'genre', 'year'))
-        st.dataframe(df, height=300, width=1000)
+        st.dataframe(df.reset_index(drop=True), height=350, width=1000)
         
     with row_2:
         st.subheader("User Score of Movies and Their Genre")
-        
+
         plotly_data = movies_data[(movies_data['score'] >= min_score) & (movies_data['score'] <= max_score)]
-        avg_user_score = plotly_data.groupby('genre')['score'].mean().round(2)
-        
-        fig = go.Figure()
-        fig.add_trace(go.Scatter(x=avg_user_score.index, y=avg_user_score.values, mode='lines+markers', name='User Score'))
-        fig.update_layout(xaxis_title='Genre', yaxis_title='Score')
-        
-        st.plotly_chart(fig)
+        avg_user_score = plotly_data.groupby('genre')['score'].count()
+
+        figpx = go.Figure(data=go.Line(x=avg_user_score.index, y=avg_user_score.values), 
+                        layout=dict(xaxis=dict(showgrid=True, gridcolor='white', gridwidth=1),
+                                    yaxis=dict(showgrid=True, gridcolor='white', gridwidth=1),
+                                    width=650, plot_bgcolor='#202324',
+                                    margin=dict(t=50)))  # Điều chỉnh margin ở trên
+        st.plotly_chart(figpx)
+
+
+
 
     st.write("""Average Movie Budget, Grouped by Genre""")
     avg_budget = movies_data.groupby('genre')['budget'].mean().round()
@@ -57,8 +60,9 @@ def main():
     plt.bar(genre, avg_bud, color = 'maroon')
     plt.xlabel('genre')
     plt.ylabel('budget')
-    plt.title('Matplotlib Bar Chart Showing the Average \
-        Budget of Movies in Each Genre')
+    plt.title('Matplotlib Bar Chart Showing the Average Budget of Movies in Each Genre')
+    
+    st.pyplot(fig)
 
 if __name__ == "__main__":
     main()
